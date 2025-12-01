@@ -1,7 +1,6 @@
 path: /home/byorky/HumanBoneFractureIdentification/Human Bone Fractures Multi-modal Image Dataset (HBFMID)/Bone_Fractures_Overfit_Check
-train: /train/images
-val: /valid/images
-test: /test/images
+train: train/images
+#val: valid/images
 
 nc: 10
 names:
@@ -17,10 +16,3 @@ names:
     "Transverse Displaced",
     "Transverse",
   ]
-
-roboflow:
-  workspace: iubat-i4ldm
-  project: bon-fracture-detection
-  version: 2
-  license: Private
-  url: https://app.roboflow.com/iubat-i4ldm/bon-fracture-detection/2

@@ -1,7 +1,7 @@
-path: /home/byorky/HumanBoneFractureIdentification/Human Bone Fractures Multi-modal Image Dataset (HBFMID)/Bone_Fractures_Overfit_Check
-train: /train/images
-val: /valid/images
-test: /test/images
+path: /home/byorky/HumanBoneFractureIdentification/Human Bone Fractures Multi-modal Image Dataset (HBFMID)/Bone Fractures Detection
+train: train/images
+val: valid/images
+test: test/images
 
 nc: 10
 names:

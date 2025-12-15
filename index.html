@@ -1,10 +1,24 @@
 <!DOCTYPE html>
+<!--
+Human Bone Fracture Identification - Web Interface
+Author: Bobby McClosky
+Description: Interactive web interface for uploading and analyzing medical images
+             to detect bone fractures using YOLOv11 object detection.
+Features:
+- Drag-and-drop image upload
+- Real-time fracture detection
+- Visual annotation with bounding boxes
+- Confidence scoring for each detection
+-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Image Classifier</title>
     <style>
+        /* ================================================================
+           CSS Variables - Design System Colors
+           ================================================================ */
         :root {
             --color-primary: #2180A0;
             --color-primary-hover: #1a6680;
@@ -17,6 +31,9 @@
             --color-text-light: #6B7280;
         }
 
+        /* ================================================================
+           Global Styles
+           ================================================================ */
         * {
             box-sizing: border-box;
         }
@@ -29,6 +46,9 @@
             color: var(--color-text);
         }
 
+        /* ================================================================
+           Layout Components
+           ================================================================ */
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -52,6 +72,9 @@
             margin: 0;
         }
 
+        /* ================================================================
+           Card Container
+           ================================================================ */
         .card {
             background: var(--color-surface);
             border: 1px solid var(--color-border);
@@ -60,6 +83,9 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
+        /* ================================================================
+           Upload Area Styling
+           ================================================================ */
         .upload-area {
             border: 2px dashed var(--color-primary);
             border-radius: 8px;
@@ -75,6 +101,7 @@
             background-color: rgba(33, 128, 160, 0.05);
         }
 
+        /* Drag-and-drop active state */
         .upload-area.dragover {
             border-color: var(--color-success);
             background-color: rgba(16, 185, 129, 0.1);
@@ -96,10 +123,14 @@
             color: var(--color-text-light);
         }
 
+        /* Hide the actual file input element */
         input[type="file"] {
             display: none;
         }
 
+        /* ================================================================
+           Image Preview Styling
+           ================================================================ */
         .image-preview {
             margin: 30px 0;
             text-align: center;
@@ -112,6 +143,9 @@
             border: 1px solid var(--color-border);
         }
 
+        /* ================================================================
+           Button Styles
+           ================================================================ */
         .button-group {
             display: flex;
             gap: 12px;
@@ -153,13 +187,16 @@
             cursor: not-allowed;
         }
 
+        /* ================================================================
+           Results Display Styling
+           ================================================================ */
         .results {
             margin-top: 30px;
             padding: 20px;
             background-color: rgba(16, 185, 129, 0.05);
             border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: 8px;
-            display: none;
+            display: none; /* Hidden by default, shown via JavaScript */
         }
 
         .results.show {
@@ -180,6 +217,7 @@
             margin-bottom: 15px;
         }
 
+        /* Confidence score visualization */
         .confidence-bar {
             margin: 15px 0;
         }
@@ -207,6 +245,9 @@
             transition: width 0.3s ease;
         }
 
+        /* ================================================================
+           Error Message Styling
+           ================================================================ */
         .error {
             padding: 15px;
             background-color: rgba(239, 68, 68, 0.1);
@@ -214,17 +255,20 @@
             border-radius: 8px;
             color: var(--color-error);
             margin: 15px 0;
-            display: none;
+            display: none; /* Hidden by default */
         }
 
         .error.show {
             display: block;
         }
 
+        /* ================================================================
+           Loading Spinner Styling
+           ================================================================ */
         .loading {
             text-align: center;
             padding: 20px;
-            display: none;
+            display: none; /* Hidden by default */
         }
 
         .loading.show {
@@ -245,6 +289,9 @@
             to { transform: rotate(360deg); }
         }
 
+        /* ================================================================
+           Detection Results List Styling
+           ================================================================ */
         .all-predictions {
             margin-top: 20px;
             padding-top: 20px;
@@ -276,13 +323,19 @@
     </style>
 </head>
 <body>
+    <!-- ================================================================
+         Main Application Container
+         ================================================================ -->
     <div class="container">
+        <!-- Application Header -->
         <header>
             <h1>Bone Fracture Detector</h1>
-            <p class="subtitle">Upload X-ray images to detect bone fractures using trained YOLOv11 image classifier</p>
+            <p class="subtitle">Upload X-ray images to detect bone fractures using trained YOLOv11 object detection model</p>
         </header>
 
+        <!-- Main Content Card -->
         <div class="card">
+            <!-- File Upload Area (with drag-and-drop support) -->
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📸</div>
                 <div class="upload-text">Click to upload or drag and drop</div>
@@ -290,29 +343,36 @@
                 <input type="file" id="fileInput" accept="image/*,.dcm" />
             </div>
 
+            <!-- Image Preview Container (populated dynamically) -->
             <div class="image-preview" id="imagePreview"></div>
 
+            <!-- Error Message Display -->
             <div class="error" id="error"></div>
 
+            <!-- Loading Indicator -->
             <div class="loading" id="loading">
                 <div class="spinner"></div>
                 <p>Analyzing image...</p>
             </div>
 
+            <!-- Results Display Container -->
             <div class="results" id="results">
                 <div class="result-label">Detection Results</div>
                 <div class="result-class" id="detectionCount">0 Detections</div>
                 
+                <!-- Annotated Image with Bounding Boxes -->
                 <div class="annotated-image-container">
                     <img id="annotatedImage" src="" alt="Annotated" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--color-border); margin: 15px 0;" />
                 </div>
 
+                <!-- List of All Detections -->
                 <div class="all-predictions">
                     <h3>Detected Objects</h3>
                     <div id="allPredictions"></div>
                 </div>
             </div>
 
+            <!-- Action Buttons (Analyze and Clear) -->
             <div class="button-group" id="buttonGroup" style="display: none; margin-top: 20px;">
                 <button class="btn-primary" id="analyzeBtn" onclick="analyzeImage()">Analyze Image</button>
                 <button class="btn-secondary" id="clearBtn" onclick="clearImage()">Clear</button>
@@ -321,6 +381,9 @@
     </div>
 
     <script>
+        // ================================================================
+        // DOM Element References
+        // ================================================================
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const imagePreview = document.getElementById('imagePreview');
@@ -328,12 +391,16 @@
         const error = document.getElementById('error');
         const loading = document.getElementById('loading');
         const results = document.getElementById('results');
-        let selectedFile = null;
+        let selectedFile = null;  // Stores the currently selected file
 
-        // Upload area click
+        // ================================================================
+        // Event Listeners - File Upload
+        // ================================================================
+        
+        // Click handler: Open file picker when upload area is clicked
         uploadArea.addEventListener('click', () => fileInput.click());
 
-        // File input change
+        // File selection handler: Process selected file
         fileInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
                 selectedFile = e.target.files[0];
@@ -341,48 +408,77 @@
             }
         });
 
-        // Drag and drop
+        // ================================================================
+        // Event Listeners - Drag and Drop
+        // ================================================================
+        
+        // Drag over handler: Highlight upload area
         uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
+            e.preventDefault();  // Prevent default to allow drop
             uploadArea.classList.add('dragover');
         });
 
+        // Drag leave handler: Remove highlight
         uploadArea.addEventListener('dragleave', () => {
             uploadArea.classList.remove('dragover');
         });
 
+        // Drop handler: Process dropped file
         uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
+            e.preventDefault();  // Prevent browser from opening the file
             uploadArea.classList.remove('dragover');
             if (e.dataTransfer.files.length > 0) {
                 selectedFile = e.dataTransfer.files[0];
-                fileInput.files = e.dataTransfer.files;
+                fileInput.files = e.dataTransfer.files;  // Sync with file input
                 displayImage(selectedFile);
             }
         });
 
+        // ================================================================
+        // Function: Display Selected Image
+        // ================================================================
+        /**
+         * Displays the selected image in the preview area
+         * @param {File} file - The image file to display
+         */
         function displayImage(file) {
             const reader = new FileReader();
             reader.onload = (e) => {
+                // Show image preview
                 imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview" />`;
+                
+                // Hide upload area and show action buttons
                 uploadArea.style.display = 'none';
                 buttonGroup.style.display = 'flex';
+                
+                // Clear any previous results or errors
                 clearResults();
             };
+            // Read file as data URL for display
             reader.readAsDataURL(file);
         }
 
+        // ================================================================
+        // Function: Analyze Image (Main Detection Function)
+        // ================================================================
+        /**
+         * Sends the selected image to the backend for fracture detection
+         * Displays results including annotated image and detection list
+         */
         async function analyzeImage() {
             if (!selectedFile) return;
 
+            // Reset UI state
             error.classList.remove('show');
             loading.classList.add('show');
             results.classList.remove('show');
 
+            // Prepare form data for API request
             const formData = new FormData();
             formData.append('file', selectedFile);
 
             try {
+                // Send POST request to Flask backend
                 const response = await fetch('/predict', {
                     method: 'POST',
                     body: formData
@@ -390,18 +486,30 @@
 
                 const data = await response.json();
 
+                // Handle API errors
                 if (!response.ok) {
                     throw new Error(data.error || 'Prediction failed');
                 }
 
+                // Display detection results
                 displayResults(data);
+                
             } catch (err) {
+                // Display error message to user
                 showError(err.message);
             } finally {
+                // Hide loading indicator
                 loading.classList.remove('show');
             }
         }
 
+        // ================================================================
+        // Function: Display Detection Results
+        // ================================================================
+        /**
+         * Displays detection results including count, annotated image, and list
+         * @param {Object} data - Detection results from the API
+         */
         function displayResults(data) {
             const numDetections = data.num_detections || 0;
             const detections = data.detections || [];
@@ -410,12 +518,12 @@
             // Display detection count
             document.getElementById('detectionCount').textContent = `${numDetections} Detection${numDetections !== 1 ? 's' : ''}`;
 
-            // Display annotated image
+            // Display annotated image with bounding boxes
             if (annotatedImage) {
                 document.getElementById('annotatedImage').src = annotatedImage;
             }
 
-            // Display all detections
+            // Generate HTML for detection list
             const detectionsHtml = detections
                 .map(det => `
                     <div class="prediction-item">
@@ -424,16 +532,33 @@
                     </div>
                 `)
                 .join('');
+            
+            // Display detection list or "no detections" message
             document.getElementById('allPredictions').innerHTML = detectionsHtml || '<p style="color: var(--color-text-light);">No objects detected</p>';
 
+            // Show results section
             results.classList.add('show');
         }
 
+        // ================================================================
+        // Function: Show Error Message
+        // ================================================================
+        /**
+         * Displays an error message to the user
+         * @param {string} message - The error message to display
+         */
         function showError(message) {
             error.textContent = message;
             error.classList.add('show');
         }
 
+        // ================================================================
+        // Function: Clear Image and Results
+        // ================================================================
+        /**
+         * Resets the application to initial state
+         * Clears selected file, preview, and all results
+         */
         function clearImage() {
             selectedFile = null;
             fileInput.value = '';
@@ -443,6 +568,12 @@
             clearResults();
         }
 
+        // ================================================================
+        // Function: Clear Results Display
+        // ================================================================
+        /**
+         * Hides results and error messages
+         */
         function clearResults() {
             results.classList.remove('show');
             error.classList.remove('show');

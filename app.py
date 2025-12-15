@@ -46,7 +46,7 @@ CORS(app)
 # ============================================================================
 # Load the trained YOLOv11 model for bone fracture detection
 # Note: Ensure 'bestRun.pt' exists in the application directory
-model = YOLO('bestRun.pt')  # Pre-trained model weights
+model = YOLO('bestRun.pt')  # Fine-tuned model weights for fracture detection
 
 # ============================================================================
 # Web Routes

@@ -2,7 +2,7 @@
 
 A deep learning-based web application for automated detection and classification of bone fractures in medical X-ray and MRI images using YOLOv11 object detection.
 
-## 🎯 Features
+## Features
 
 - **Multi-class Fracture Detection**: Identifies 10 different types of bone fractures including:
   - Comminuted
@@ -22,7 +22,7 @@ A deep learning-based web application for automated detection and classification
 - **REST API**: Easy-to-use API endpoint for integration with other systems
 - **Visual Feedback**: Annotated images with bounding boxes and labels
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Deep Learning Framework**: [Ultralytics YOLOv11](https://github.com/ultralytics/ultralytics)
 - **Backend**: Flask (Python web framework)
@@ -31,7 +31,7 @@ A deep learning-based web application for automated detection and classification
 - **Experiment Tracking**: Comet ML
 - **Dataset**: Human Bone Fractures Multi-modal Image Dataset (HBFMID) - 1,539 annotated images
 
-## 📋 Requirements
+## Requirements
 
 - Python 3.8+
 - CUDA-compatible GPU (recommended for training)
@@ -44,7 +44,7 @@ A deep learning-based web application for automated detection and classification
   - numpy
   - comet-ml
 
-## 🚀 Installation
+## Installation
 
 1. **Clone the repository**
    ```bash
@@ -61,7 +61,7 @@ A deep learning-based web application for automated detection and classification
    
    The trained model weights (`bestRun.pt`) should be placed in the root directory. If not present, you'll need to train the model first (see Training section).
 
-## 💻 Usage
+## Usage
 
 ### Running the Web Application
 
@@ -114,7 +114,7 @@ curl -X POST -F "file=@path/to/xray.jpg" http://localhost:5000/predict
 curl http://localhost:5000/health
 ```
 
-## 🎓 Training the Model
+## Training the Model
 
 ### Full Training
 
@@ -150,7 +150,7 @@ Before full training, verify the model can learn by overfitting a small dataset:
 
 This trains on 50 images without regularization. Success is indicated by training loss approaching zero.
 
-## 📊 Dataset Information
+## Dataset Information
 
 - **Name**: Human Bone Fractures Multi-modal Image Dataset (HBFMID)
 - **Source**: Roboflow - Bone Fracture Detection Dataset v2
@@ -168,7 +168,7 @@ This trains on 50 images without regularization. Success is indicated by trainin
   - Random shear (-2° to +2°)
   - Random brightness adjustment (-10% to +10%)
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 HumanBoneFractureIdentification/
@@ -193,7 +193,7 @@ HumanBoneFractureIdentification/
         └── data_small.yaml         # Small dataset configuration
 ```
 
-## 🔬 Model Architecture
+## Model Architecture
 
 - **Base Model**: YOLOv11 Nano (yolo11n)
 - **Transfer Learning**: First 10 layers frozen
@@ -205,7 +205,7 @@ HumanBoneFractureIdentification/
   - Classification loss
   - Objectness loss
 
-## 📈 Model Performance
+## Model Performance
 
 The model is trained with early stopping based on validation performance. Key metrics tracked:
 - mAP (mean Average Precision)
@@ -215,19 +215,19 @@ The model is trained with early stopping based on validation performance. Key me
 
 Training progress and metrics are tracked using Comet ML for visualization and analysis.
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
 
-## 👤 Author
+## Author
 
 **Bobby McClosky**
 
-## 📝 License
+## License
 
 This project uses the Human Bone Fractures Multi-modal Image Dataset (HBFMID) which is licensed as Private on Roboflow. Please respect the dataset license terms.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Dataset provided by [Roboflow](https://roboflow.com/) - IUBAT workspace
 - YOLOv11 by [Ultralytics](https://github.com/ultralytics/ultralytics)

@@ -152,6 +152,7 @@ This trains on 50 images without regularization. Success is indicated by trainin
 
 ## 📊 Dataset Information
 
+- **Name**: Human Bone Fractures Multi-modal Image Dataset (HBFMID)
 - **Source**: Roboflow - Bone Fracture Detection Dataset v2
 - **Total Images**: 1,539 annotated medical images
 - **Format**: YOLOv8/YOLOv11 (YOLO format annotations)
